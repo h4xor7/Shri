@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <com.google.android.material.chip.ChipGroup
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        app:singleSelection="true"
+        android:paddingStart="@dimen/_4sdp"
+        android:paddingEnd="@dimen/_4sdp">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipMonth"
+            style="@style/Widget.MaterialComponents.Chip.Choice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checkable="true"
+            android:clickable="true"
+            android:gravity="center"
+            app:chipMinTouchTargetSize="@dimen/_18sdp"
+            android:focusable="true"
+            android:text="JAN"
+            android:textColor="@color/chip_text_color_state"
+            app:chipBackgroundColor="@color/bg_chip_state_list"/>
+
+
+    </com.google.android.material.chip.ChipGroup>
+
+</LinearLayout>

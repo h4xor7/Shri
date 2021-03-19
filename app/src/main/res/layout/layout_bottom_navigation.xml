@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.bottomnavigation.BottomNavigationView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/primary_light_blue"
+    app:itemTextColor="@color/white"
+    app:itemIconTint="@color/white"
+    app:itemRippleColor="@color/secondary_light_blue"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    app:menu="@menu/bottom_navigation_menu"
+    android:layout_gravity="bottom">
+
+
+
+</com.google.android.material.bottomnavigation.BottomNavigationView>

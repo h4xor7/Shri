@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Shri</string>
+    <string name="home">Home</string>
+    <string name="details">Details</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="item_name">Item Name</string>
+    <string name="expense_value">500</string>
+    <string name="recent_expense">Recent Expense</string>
+    <string name="rupee_sign">₹</string>
+    <string name="enter_item_price">Enter Item Price</string>
+    <string name="enter_item_name">Enter Item Name</string>
+    <string name="category">Category</string>
+</resources>

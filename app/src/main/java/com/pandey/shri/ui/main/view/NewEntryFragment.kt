@@ -22,6 +22,7 @@ import com.pandey.shri.ui.main.viewmodel.NewEntryViewModel
 import com.pandey.shri.utils.Utils
 import java.time.OffsetDateTime
 import java.time.ZoneId
+import java.time.ZoneOffset
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -97,7 +98,7 @@ class NewEntryFragment : Fragment(), DatePickerDialog.OnDateSetListener {
 
 
     private fun addCategory() {
-        var categoryList: ArrayList<CategoryModel> = ArrayList<CategoryModel>()
+        val categoryList: ArrayList<CategoryModel> = ArrayList<CategoryModel>()
 
         categoryList.add(CategoryModel("Recharge", R.drawable.ic_cell_phone))
         categoryList.add(CategoryModel("Vegetable", R.drawable.ic_vegetables))
@@ -142,6 +143,7 @@ class NewEntryFragment : Fragment(), DatePickerDialog.OnDateSetListener {
         }
         newEntryViewModel = ViewModelProvider(this, factory).get(NewEntryViewModel::class.java)
 
+/*
         newEntryViewModel.allExpense.observe(viewLifecycleOwner, { entry ->
 
 
@@ -152,6 +154,7 @@ class NewEntryFragment : Fragment(), DatePickerDialog.OnDateSetListener {
             }
 
         })
+*/
 
     }
 
@@ -161,10 +164,13 @@ class NewEntryFragment : Fragment(), DatePickerDialog.OnDateSetListener {
         val itemName = entryBinding?.edtItemName?.text.toString()
         val categoryName = entryBinding?.txtSelected?.text.toString()
         val offsetDateTime = OffsetDateTime.now(ZoneId.systemDefault())
+      //  val offsetDateTime = OffsetDateTime.of(2021, 2, 18, 0, 0, 0, 0, ZoneOffset.UTC)
+
 
         val entry = Entry(offsetDateTime, categoryName, itemName, itemPrice)
 
         newEntryViewModel.insert(entry)
+
         resetToDefault()
 
 

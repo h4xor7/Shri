@@ -9,13 +9,17 @@ import com.pandey.shri.data.repository.ExpenseRepository
 
 class DetailViewModel(application: Application) : AndroidViewModel(application) {
 
-    private  val repository:ExpenseRepository
-    val allExpense : LiveData<List<Entry>>
+
+    private val repository: ExpenseRepository
+
+    val allExpense: LiveData<List<Entry>>
+
 
     init {
-        val  expenseDao = ExpenseRoomDatabase.getDatabase(application).expenseDao()
+        val expenseDao = ExpenseRoomDatabase.getDatabase(application).expenseDao()
         repository = ExpenseRepository(expenseDao)
         allExpense = repository.allExpense
+
     }
 
 }

@@ -65,8 +65,7 @@
                     android:layout_gravity="center"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_32ssp"
-                    android:textStyle="bold"
-                  />
+                    android:textStyle="bold"/>
 
 
                 <TextView

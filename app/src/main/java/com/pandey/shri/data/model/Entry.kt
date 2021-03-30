@@ -14,5 +14,5 @@ data class Entry(
 
     ){
     @PrimaryKey(autoGenerate = true)
-    var id: Int? = 0
+    var id: Int? = null
 }

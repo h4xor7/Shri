@@ -2,11 +2,14 @@ package com.pandey.shri.ui.main.view
 
 import android.app.DatePickerDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.DatePicker
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
@@ -14,30 +17,63 @@ import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.utils.ColorTemplate
 import com.pandey.shri.R
 import com.pandey.shri.databinding.FragmentHomeBinding
-import com.pandey.shri.ui.main.adapter.CategoryAdapter
+import com.pandey.shri.ui.main.viewmodel.HomeViewModel
+import com.pandey.shri.utils.HomePrefrences
 import com.pandey.shri.utils.Utils
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.collections.ArrayList
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 var pieEntries: ArrayList<PieEntry>? = null
+private const val TAG = "HomeFragment"
 
 
-/**
- * A simple [Fragment] subclass.
- * Use the [HomeFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
 class HomeFragment : Fragment(), DatePickerDialog.OnDateSetListener {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
+    private lateinit var homeViewModel: HomeViewModel
+    private var monthValue = Utils.getCurrentMonth()
+    private var yearValue = Calendar.getInstance().get(Calendar.YEAR);
+    private var dateValue = 1
+    lateinit var homePerferences: HomePrefrences
 
+
+    private var grandTotalExpense: Int = 0
+    private var totalRechargeExpense: Int = 0
+    private var rechargeExpensePer: Float = 0F
+
+    private var totalClothExpense: Int = 0
+    private var clothExpensePer: Float = 0F
+    private var clothTest: Int = 0
+
+
+    private var totalFareExpense: Int = 0
+    private var fareExpensePer: Float = 0F
+
+    private var totalVegetablesExpense: Int = 0
+    private var vegetablesExpensePer: Float = 0F
+
+    private var totalElectricExpense: Int = 0
+    private var electricExpensePer: Float = 0F
+
+    private var totalTuitionExpense: Int = 0
+    private var tuitionExpensePer: Float = 0F
+
+    private var totalFastFoodExpense: Int = 0
+    private var fastFoodExpensePer: Float = 0F
+
+
+    private var totalOtherExpense: Int = 0
+    private var otherExpensePer: Float = 0F
+
+
+    val list = mutableListOf<Int>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +81,7 @@ class HomeFragment : Fragment(), DatePickerDialog.OnDateSetListener {
             param1 = it.getString(ARG_PARAM1)
             param2 = it.getString(ARG_PARAM2)
         }
+
     }
 
     override fun onCreateView(
@@ -68,14 +105,36 @@ class HomeFragment : Fragment(), DatePickerDialog.OnDateSetListener {
 
         }
 
+        homePerferences = context?.let { HomePrefrences(it) }!!
 
+
+        observeViewModel()
 
         showPieChart()
         setDashboardDate()
 
+
     }
 
-    fun setDashboardDate() {
+    private fun observeViewModel() {
+
+        val factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                return activity?.application?.let {
+                    HomeViewModel(it)
+                } as T
+            }
+        }
+
+
+        homeViewModel = ViewModelProvider(this, factory).get(HomeViewModel::class.java)
+        observeFilterData()
+
+
+    }
+
+
+    private fun setDashboardDate() {
         val c = Calendar.getInstance()
         val year = c.get(Calendar.YEAR)
         val month = c.get(Calendar.MONTH)
@@ -89,19 +148,227 @@ class HomeFragment : Fragment(), DatePickerDialog.OnDateSetListener {
             val datePickerDialog =
                 activity?.let { it1 -> DatePickerDialog(it1, this, year, month, day) }
 
+            //yha default data call hoga for current month
+
+
             datePickerDialog?.datePicker?.maxDate = c.timeInMillis
             datePickerDialog?.show()
+
         }
 
 
+    }
 
+    private fun observeFilterData() {
+
+        homeViewModel.getHomeFilterData(
+            Utils.getHomeOffSetDateOfMonth(dateValue, monthValue, yearValue),
+            Utils.getLastOffsetDateOfMonth(
+                monthValue, yearValue, Utils.getLastDateOFMonth(monthValue)
+            )
+        ).observe(viewLifecycleOwner, { allExpense ->
+
+            grandTotalExpense = Utils.grandTotal(allExpense)
+
+            getAllExpense(grandTotalExpense)
+
+          /*  GlobalScope.launch {
+                if (grandTotalExpense != null) {
+
+                    homePerferences.saveGrandTotal(grandTotalExpense)
+                }
+            }*/
+
+        })
+
+
+        //recharge total
+        homeViewModel.allRecharge(
+            Utils.getHomeOffSetDateOfMonth(dateValue, monthValue, yearValue),
+            Utils.getLastOffsetDateOfMonth(
+                monthValue, yearValue, Utils.getLastDateOFMonth(monthValue)
+            )
+        ).observe(viewLifecycleOwner, { allRecharge ->
+
+            totalRechargeExpense = Utils.grandTotal(allRecharge)
+
+         /*   GlobalScope.launch {
+
+                homePerferences.saveRechargeTotal(totalRechargeExpense)
+            }*/
+
+
+            //   rechargeExpensePer = calculatePercentage(grandTotalExpense, totalRechargeExpense)
+            //   pieEntries?.add(PieEntry(rechargeExpensePer, Constant.RECHARGE))
+
+
+        })
+
+        //vegetable total
+        homeViewModel.allVegetable(
+            Utils.getHomeOffSetDateOfMonth(dateValue, monthValue, yearValue),
+            Utils.getLastOffsetDateOfMonth(
+                monthValue, yearValue, Utils.getLastDateOFMonth(monthValue)
+            )
+        ).observe(viewLifecycleOwner, { allVegetable ->
+            totalVegetablesExpense = Utils.grandTotal(allVegetable)
+
+      /*      GlobalScope.launch {
+
+                homePerferences.saveVegetableTotal(totalVegetablesExpense)
+            }
+*/
+        })
+
+
+        //cloth total
+        homeViewModel.allCloth(
+            Utils.getHomeOffSetDateOfMonth(dateValue, monthValue, yearValue),
+            Utils.getLastOffsetDateOfMonth(
+                monthValue, yearValue, Utils.getLastDateOFMonth(monthValue)
+            )
+        ).observe(viewLifecycleOwner, { allCloth ->
+
+            totalClothExpense = Utils.grandTotal(allCloth)
+
+         /*   GlobalScope.launch {
+                homePerferences.saveClothTotal(totalClothExpense)
+
+                Log.d(TAG, "observeFilterData: cloth saved")
+            }
+*/
+        })
+
+        //fare total
+        homeViewModel.allFare(
+            Utils.getHomeOffSetDateOfMonth(dateValue, monthValue, yearValue),
+            Utils.getLastOffsetDateOfMonth(
+                monthValue, yearValue, Utils.getLastDateOFMonth(monthValue)
+            )
+        ).observe(viewLifecycleOwner, { allFare ->
+
+            totalFareExpense = Utils.grandTotal(allFare)
+
+         /*   GlobalScope.launch {
+
+                homePerferences.saveFareTotal(totalFareExpense)
+
+            }*/
+
+
+            // fareExpensePer = calculatePercentage(grandTotalExpense, totalFareExpense)
+            //pieEntries?.add(PieEntry(fareExpensePer, Constant.CLOTH))
+        })
+
+        //electric total
+        homeViewModel.allElectric(
+            Utils.getHomeOffSetDateOfMonth(dateValue, monthValue, yearValue),
+            Utils.getLastOffsetDateOfMonth(
+                monthValue, yearValue, Utils.getLastDateOFMonth(monthValue)
+            )
+        ).observe(viewLifecycleOwner, { allElectric ->
+
+            totalElectricExpense = Utils.grandTotal(allElectric)
+
+/*
+            GlobalScope.launch {
+
+                homePerferences.saveElectricTotal(totalElectricExpense)
+            }
+*/
+
+            //   electricExpensePer = calculatePercentage(grandTotalExpense, totalElectricExpense)
+            // pieEntries?.add(PieEntry(electricExpensePer, Constant.CLOTH))
+
+        })
+
+        //tuition total
+        homeViewModel.allTuition(
+            Utils.getHomeOffSetDateOfMonth(dateValue, monthValue, yearValue),
+            Utils.getLastOffsetDateOfMonth(
+                monthValue, yearValue, Utils.getLastDateOFMonth(monthValue)
+            )
+        ).observe(viewLifecycleOwner, { allTuition ->
+
+            totalTuitionExpense = Utils.grandTotal(allTuition)
+/*
+            GlobalScope.launch {
+
+
+                homePerferences.saveTuitionTotal(totalTuitionExpense)
+
+            }
+*/
+
+            //    tuitionExpensePer = calculatePercentage(grandTotalExpense, totalTuitionExpense)
+            //  pieEntries?.add(PieEntry(electricExpensePer, Constant.CLOTH))
+            Log.d(TAG, "observeViewModel HOME: $totalTuitionExpense")
+        })
+
+        //other total
+        homeViewModel.allOther(
+            Utils.getHomeOffSetDateOfMonth(dateValue, monthValue, yearValue),
+            Utils.getLastOffsetDateOfMonth(
+                monthValue, yearValue, Utils.getLastDateOFMonth(monthValue)
+            )
+        ).observe(viewLifecycleOwner, { allother ->
+
+            totalOtherExpense = Utils.grandTotal(allother)
+         /*   GlobalScope.launch {
+
+                homePerferences.saveOtherTotal(totalOtherExpense)
+
+            }*/
+
+
+        })
+
+        //fast food total
+        homeViewModel.allFastFood(
+            Utils.getHomeOffSetDateOfMonth(dateValue, monthValue, yearValue),
+            Utils.getLastOffsetDateOfMonth(
+                monthValue, yearValue, Utils.getLastDateOFMonth(monthValue)
+            )
+        ).observe(viewLifecycleOwner, { allfastFood ->
+
+            totalFastFoodExpense = Utils.grandTotal(allfastFood)
+/*
+            GlobalScope.launch {
+
+                homePerferences.saveFastFoodTotal(totalFastFoodExpense)
+
+            }
+*/
+
+
+        })
+
+/*
+        homePerferences.getClothTotal.asLiveData().observe(viewLifecycleOwner) {
+
+            if (it != null) {
+                clothTest = it
+
+            }
+        }*/
 
 
     }
 
 
+    private fun getAllExpense(grandTotal: Int) {
+        _binding?.txtTotalExpenseValue?.text = grandTotal.toString()
+
+        grandTotalExpense = grandTotal
+
+    }
+
+
     private fun showPieChart() {
+
         pieEntries = ArrayList()
+
+
         pieEntries?.add(PieEntry(2f, "Fare"))
         pieEntries?.add(PieEntry(4f, "Recharge"))
         pieEntries?.add(PieEntry(2f, "Cloths"))
@@ -141,15 +408,10 @@ class HomeFragment : Fragment(), DatePickerDialog.OnDateSetListener {
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment HomeFragment.
-         */
+
         // TODO: Rename and change types and number of parameters
+
+
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
             HomeFragment().apply {
@@ -164,6 +426,22 @@ class HomeFragment : Fragment(), DatePickerDialog.OnDateSetListener {
         val strMonth = Utils.getMonthName(month)
         _binding?.txtDate?.text = dayOfMonth.toString()
         _binding?.txtmonth?.text = strMonth
+
+        //  yha filter wala data  call hoga
+
+        dateValue = dayOfMonth
+        yearValue = year
+        monthValue = month + 1
+
+        observeFilterData()
+
+
+    }
+
+    fun calculatePercentage(grandTotal: Int, categoryTotal: Int): Float {
+
+        val percentage = (categoryTotal / grandTotalExpense) * 100
+        return percentage.toFloat()
 
     }
 

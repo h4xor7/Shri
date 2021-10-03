@@ -24,53 +24,57 @@ class ExpenseRepository(private val expenseDao: ExpenseDao) {
         return expenseDao.getDataByMonth(fromDateTime,toDateTime)
     }
 
-
-    fun allRecharge(  fromDateTime: OffsetDateTime,
-                      toDateTime: OffsetDateTime): LiveData<List<Entry>>{
-       return  expenseDao.getDataByCategory(Constant.RECHARGE,fromDateTime,toDateTime)
-    }
-
     fun allCloth(  fromDateTime: OffsetDateTime,
-                   toDateTime: OffsetDateTime): LiveData<List<Entry>>{
+                   toDateTime: OffsetDateTime): List<Entry>{
         return  expenseDao.getDataByCategory(Constant.CLOTH,fromDateTime,toDateTime)
     }
 
     fun allTuition(  fromDateTime: OffsetDateTime,
-                   toDateTime: OffsetDateTime): LiveData<List<Entry>>{
+                   toDateTime: OffsetDateTime): List<Entry>{
         return  expenseDao.getDataByCategory(Constant.TUITION,fromDateTime,toDateTime)
-    }
-
-    fun allElectric(  fromDateTime: OffsetDateTime,
-                     toDateTime: OffsetDateTime): LiveData<List<Entry>>{
-        return  expenseDao.getDataByCategory(Constant.ELECTRIC,fromDateTime,toDateTime)
-    }
-
-
-    fun allFare(  fromDateTime: OffsetDateTime,
-                      toDateTime: OffsetDateTime): LiveData<List<Entry>>{
-        return  expenseDao.getDataByCategory(Constant.FARE,fromDateTime,toDateTime)
-    }
-
-
-    fun allFastFood(  fromDateTime: OffsetDateTime,
-                  toDateTime: OffsetDateTime): LiveData<List<Entry>>{
-        return  expenseDao.getDataByCategory(Constant.FAST_FOOD,fromDateTime,toDateTime)
     }
 
 
     fun allOther(  fromDateTime: OffsetDateTime,
-                      toDateTime: OffsetDateTime): LiveData<List<Entry>>{
+                      toDateTime: OffsetDateTime): List<Entry>{
         return  expenseDao.getDataByCategory(Constant.OTHER,fromDateTime,toDateTime)
     }
 
-
+    fun allRecharge(  fromDateTime: OffsetDateTime,
+                      toDateTime: OffsetDateTime): List<Entry>{
+       return  expenseDao.getDataByCategory(Constant.RECHARGE,fromDateTime,toDateTime)
+   }
     fun allVegetable(  fromDateTime: OffsetDateTime,
-                   toDateTime: OffsetDateTime): LiveData<List<Entry>>{
+                       toDateTime: OffsetDateTime): List<Entry>{
         return  expenseDao.getDataByCategory(Constant.VEGETABLES,fromDateTime,toDateTime)
+    }
+
+    fun allFastFood(  fromDateTime: OffsetDateTime,
+                      toDateTime: OffsetDateTime): List<Entry>{
+        return  expenseDao.getDataByCategory(Constant.FAST_FOOD,fromDateTime,toDateTime)
+    }
+    fun allFare(  fromDateTime: OffsetDateTime,
+                  toDateTime: OffsetDateTime): List<Entry>{
+        return  expenseDao.getDataByCategory(Constant.FARE,fromDateTime,toDateTime)
+    }
+
+    fun allElectric(  fromDateTime: OffsetDateTime,
+                      toDateTime: OffsetDateTime): List<Entry>{
+        return  expenseDao.getDataByCategory(Constant.ELECTRIC,fromDateTime,toDateTime)
     }
 
 
     suspend fun insert(entry: Entry) {
         expenseDao.insertALL(entry)
+    }
+
+    fun getDataByCategory(
+        categoryName: String,
+        fromDateTime: OffsetDateTime,
+        toDateTime: OffsetDateTime
+    ): List<Entry> {
+
+
+       return expenseDao.getDataByCategory(categoryName,fromDateTime,toDateTime)
     }
 }

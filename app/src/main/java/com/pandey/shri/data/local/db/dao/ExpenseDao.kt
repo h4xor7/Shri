@@ -39,7 +39,7 @@ interface ExpenseDao {
 
 
     @Query("SELECT * FROM entries WHERE category = :categoryName AND date  BETWEEN :startDate AND :endDate ORDER BY date ASC")
-    fun getDataByCategory(categoryName:String,startDate:OffsetDateTime,endDate:OffsetDateTime): LiveData<List<Entry>>
+    fun getDataByCategory(categoryName:String,startDate:OffsetDateTime,endDate:OffsetDateTime): List<Entry>
 
 
 

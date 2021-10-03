@@ -19,6 +19,7 @@ import com.pandey.shri.data.model.Entry
 import com.pandey.shri.databinding.FragmentNewEntryBinding
 import com.pandey.shri.ui.main.adapter.CategoryAdapter
 import com.pandey.shri.ui.main.viewmodel.NewEntryViewModel
+import com.pandey.shri.utils.Constant
 import com.pandey.shri.utils.Utils
 import java.time.OffsetDateTime
 import java.time.ZoneId
@@ -100,14 +101,14 @@ class NewEntryFragment : Fragment(), DatePickerDialog.OnDateSetListener {
     private fun addCategory() {
         val categoryList: ArrayList<CategoryModel> = ArrayList<CategoryModel>()
 
-        categoryList.add(CategoryModel("Recharge", R.drawable.ic_cell_phone))
-        categoryList.add(CategoryModel("Vegetable", R.drawable.ic_vegetables))
-        categoryList.add(CategoryModel("Cloth", R.drawable.ic_cloths))
-        categoryList.add(CategoryModel("Electric", R.drawable.ic_electrical_appliances))
-        categoryList.add(CategoryModel("Fare", R.drawable.ic_cab))
-        categoryList.add(CategoryModel("Tuition Fee", R.drawable.ic_open_book))
-        categoryList.add(CategoryModel("Fast food", R.drawable.ic_fast_food))
-        categoryList.add(CategoryModel("Other", R.drawable.ic_rupee))
+        categoryList.add(CategoryModel(Constant.RECHARGE, R.drawable.ic_cell_phone))
+        categoryList.add(CategoryModel(Constant.VEGETABLES, R.drawable.ic_vegetables))
+        categoryList.add(CategoryModel(Constant.CLOTH, R.drawable.ic_cloths))
+        categoryList.add(CategoryModel(Constant.ELECTRIC, R.drawable.ic_electrical_appliances))
+        categoryList.add(CategoryModel(Constant.FARE, R.drawable.ic_cab))
+        categoryList.add(CategoryModel(Constant.TUITION, R.drawable.ic_open_book))
+        categoryList.add(CategoryModel(Constant.FAST_FOOD, R.drawable.ic_fast_food))
+        categoryList.add(CategoryModel(Constant.OTHER, R.drawable.ic_rupee))
 
         categoryAdapter.addData(categoryList)
         entryBinding?.rvCategory?.adapter = categoryAdapter

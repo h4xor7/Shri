@@ -1,5 +1,7 @@
 package com.pandey.shri.utils
 
+import android.annotation.TargetApi
+import android.os.Build
 import android.util.Log
 import com.pandey.shri.R
 import com.pandey.shri.data.local.db.Converters
@@ -58,6 +60,13 @@ class Utils {
                 totalPrice += items[i].itemPrice
             }
             return totalPrice
+        }
+
+        fun calculatePercentage(grandTotal: Int, categoryTotal: Int): Float {
+
+            val percentage = (categoryTotal / grandTotal) * 100
+            return percentage.toFloat()
+
         }
 
 
@@ -142,6 +151,23 @@ class Utils {
 
             return OffsetDateTime.of(year, month, lastDate, 0, 0, 0, 0, ZoneOffset.UTC)
         }
+
+
+        fun getCategoryList():MutableList<String>{
+            val  list = mutableListOf<String>()
+            list.add(Constant.OTHER)
+            list.add(Constant.FAST_FOOD)
+            list.add(Constant.CLOTH)
+            list.add(Constant.TUITION)
+            list.add(Constant.ELECTRIC)
+            list.add(Constant.VEGETABLES)
+            list.add(Constant.RECHARGE)
+            list.add(Constant.FARE)
+            list.add(Constant.FAST_FOOD)
+
+            return  list
+        }
+
 
     }
 }

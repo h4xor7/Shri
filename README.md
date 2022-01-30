@@ -1,3 +1,5 @@
+![screen_shot.png](https://github.com/h4xor7/Shri/blob/def52ac8221c353a752ffc76d892bdd8593e6179/media/shri_screen_shots.png)
+
 # Shri
 
 Expense management application  Based on MVVM architecture using Room

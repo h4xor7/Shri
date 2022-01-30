@@ -4,6 +4,7 @@ import android.app.Application
 import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.github.mikephil.charting.data.PieEntry
 import com.pandey.shri.data.local.db.ExpenseRoomDatabase
@@ -28,25 +29,16 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     init {
         val expenseDao = ExpenseRoomDatabase.getDatabase(application).expenseDao()
         repository = ExpenseRepository(expenseDao)
-        allExpense = repository.allExpense
+        allExpense = repository.allExpense.asLiveData()
         Log.d(Companion.TAG, ": $allExpense")
     }
 
-    fun getHomeFilterData(
-        fromDateTime: OffsetDateTime,
-        toDateTime: OffsetDateTime
+    fun getDataByDate(
+        fromDate: Long,
+        toDate: Long
     ): LiveData<List<Entry>> {
-        return repository.filterDatabase(fromDateTime, toDateTime)
+        return repository.getDataByDate(fromDate,toDate).asLiveData()
     }
-
-    fun getDataByCategory(
-        fromDateTime: OffsetDateTime,
-        toDateTime: OffsetDateTime, categoryName: String
-    ): List<Entry> {
-
-        return repository.getDataByCategory(categoryName, fromDateTime, toDateTime)
-    }
-
 
 
 

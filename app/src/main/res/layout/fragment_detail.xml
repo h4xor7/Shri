@@ -1,224 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:orientation="vertical"
     android:layout_height="match_parent"
     tools:context=".ui.main.view.DetailFragment">
 
-    <HorizontalScrollView
-        android:id="@+id/nestedScroll"
-        android:layout_width="wrap_content"
+    <TextView
+        android:id="@+id/tvDateRange"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/_8sdp"
-        android:scrollbars="none"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/chip_group"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:paddingStart="@dimen/_8sdp"
-            android:paddingEnd="@dimen/_8sdp"
-            app:selectionRequired="true"
-            app:singleSelection="true">
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/janChip"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checkable="true"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:text="JAN"
-                android:textColor="@color/chip_text_color_state"
-                app:chipBackgroundColor="@color/bg_chip_state_list"
-                app:chipCornerRadius="6dp"
-                app:chipMinTouchTargetSize="@dimen/_18sdp" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/febChip"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checkable="true"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:text="FEB"
-                android:textColor="@color/chip_text_color_state"
-                app:chipBackgroundColor="@color/bg_chip_state_list"
-                app:chipCornerRadius="6dp"
-                app:chipMinTouchTargetSize="@dimen/_18sdp" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/marChip"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checkable="true"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:text="MAR"
-                android:textColor="@color/chip_text_color_state"
-                app:chipBackgroundColor="@color/bg_chip_state_list"
-                app:chipCornerRadius="6dp"
-                app:chipMinTouchTargetSize="@dimen/_18sdp" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/aprChip"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checkable="true"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:text="APR"
-                android:textColor="@color/chip_text_color_state"
-                app:chipBackgroundColor="@color/bg_chip_state_list"
-                app:chipCornerRadius="6dp"
-                app:chipMinTouchTargetSize="@dimen/_18sdp" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/mayChip"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checkable="true"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:text="MAY"
-                android:textColor="@color/chip_text_color_state"
-                app:chipBackgroundColor="@color/bg_chip_state_list"
-                app:chipCornerRadius="6dp"
-                app:chipMinTouchTargetSize="@dimen/_18sdp" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/junChip"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checkable="true"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:text="JUN"
-                android:textColor="@color/chip_text_color_state"
-                app:chipBackgroundColor="@color/bg_chip_state_list"
-                app:chipCornerRadius="6dp"
-                app:chipMinTouchTargetSize="@dimen/_18sdp" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/julChip"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checkable="true"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:text="JUL"
-                android:textColor="@color/chip_text_color_state"
-                app:chipBackgroundColor="@color/bg_chip_state_list"
-                app:chipCornerRadius="6dp"
-                app:chipMinTouchTargetSize="@dimen/_18sdp" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/augChip"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checkable="true"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:text="AUG"
-                android:textColor="@color/chip_text_color_state"
-                app:chipBackgroundColor="@color/bg_chip_state_list"
-                app:chipCornerRadius="6dp"
-                app:chipMinTouchTargetSize="@dimen/_18sdp" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/sepChip"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checkable="true"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:text="SEP"
-                android:textColor="@color/chip_text_color_state"
-                app:chipBackgroundColor="@color/bg_chip_state_list"
-                app:chipCornerRadius="6dp"
-                app:chipMinTouchTargetSize="@dimen/_18sdp" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/octChip"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checkable="true"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:text="OCT"
-                android:textColor="@color/chip_text_color_state"
-                app:chipBackgroundColor="@color/bg_chip_state_list"
-                app:chipCornerRadius="6dp"
-                app:chipMinTouchTargetSize="@dimen/_18sdp" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/novChip"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checkable="true"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:text="NOV"
-                android:textColor="@color/chip_text_color_state"
-                app:chipBackgroundColor="@color/bg_chip_state_list"
-                app:chipCornerRadius="6dp"
-                app:chipMinTouchTargetSize="@dimen/_18sdp" />
-
-            <com.google.android.material.chip.Chip
-                android:id="@+id/decChip"
-                style="@style/Widget.MaterialComponents.Chip.Choice"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:checkable="true"
-                android:clickable="true"
-                android:focusable="true"
-                android:gravity="center"
-                android:text="DEC"
-                android:textColor="@color/chip_text_color_state"
-                app:chipBackgroundColor="@color/bg_chip_state_list"
-                app:chipCornerRadius="6dp"
-                app:chipMinTouchTargetSize="@dimen/_18sdp" />
-
-        </com.google.android.material.chip.ChipGroup>
-
-    </HorizontalScrollView>
+        android:minHeight="@dimen/_24sdp"
+        android:text="21Jan - 26 Jan"
+        android:visibility="gone"
+        android:textSize="@dimen/_12ssp"
+        android:gravity="center_vertical"
+        android:layout_marginStart="@dimen/_8sdp"
+        android:textColor="@color/secondary_blue"
+        />
 
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rvDetail"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_8sdp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/nestedScroll" />
+        tools:listitem="@layout/item_expense"/>
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

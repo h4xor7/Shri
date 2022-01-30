@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.snackbar.Snackbar
 import com.pandey.shri.R
 import com.pandey.shri.data.model.CategoryModel
@@ -33,14 +34,14 @@ private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
 
-class NewEntryFragment : Fragment(), DatePickerDialog.OnDateSetListener {
+class NewEntryFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
     private var entryBinding: FragmentNewEntryBinding? = null
     private val binding get() = entryBinding!!
     private val categoryAdapter = CategoryAdapter()
-
+    private  var longDate: Long? =null
     private lateinit var newEntryViewModel: NewEntryViewModel
 
 
@@ -72,17 +73,39 @@ class NewEntryFragment : Fragment(), DatePickerDialog.OnDateSetListener {
         val year = c.get(Calendar.YEAR)
         val month = c.get(Calendar.MONTH)
         val day = c.get(Calendar.DAY_OF_MONTH)
-
+        longDate = c.timeInMillis
         val defMonth = Utils.getMonthName(month)
 
         entryBinding?.txtFilterDate?.text = "$day $defMonth $year"
         entryBinding?.txtFilterDate?.setOnClickListener {
 
-            val datePickerDialog =
+           /* val datePickerDialog =
                 activity?.let { it1 -> DatePickerDialog(it1, this, year, month, day) }
 
             datePickerDialog?.datePicker?.maxDate = c.timeInMillis
-            datePickerDialog?.show()
+            datePickerDialog?.show()*/
+            val datePicker =
+                MaterialDatePicker.Builder.datePicker()
+                    .setTitleText("Select date")
+                    .setTheme(R.style.ThemeOverlay_App_DatePicker)
+                    .setSelection(MaterialDatePicker.todayInUtcMilliseconds())
+                    .build()
+
+            datePicker.show(activity?.supportFragmentManager!!,"DatePicker")
+            datePicker.addOnPositiveButtonClickListener {
+                entryBinding?.txtFilterDate?.text = datePicker.headerText
+                longDate = datePicker.selection
+                Toast.makeText(context, "${datePicker.selection}", Toast.LENGTH_SHORT).show()
+            }
+
+            datePicker.addOnNegativeButtonClickListener { datePicker.dismiss()
+
+            }
+
+
+
+
+
         }
 
         val layoutManager = LinearLayoutManager(view.context)
@@ -144,19 +167,6 @@ class NewEntryFragment : Fragment(), DatePickerDialog.OnDateSetListener {
         }
         newEntryViewModel = ViewModelProvider(this, factory).get(NewEntryViewModel::class.java)
 
-/*
-        newEntryViewModel.allExpense.observe(viewLifecycleOwner, { entry ->
-
-
-            if (!entry.isEmpty()) {
-                entry?.let {
-                    Toast.makeText(context, it[0].itemName, Toast.LENGTH_SHORT).show()
-                }
-            }
-
-        })
-*/
-
     }
 
 
@@ -164,13 +174,14 @@ class NewEntryFragment : Fragment(), DatePickerDialog.OnDateSetListener {
         val itemPrice = Integer.parseInt(entryBinding?.edtItemPrice?.text.toString())
         val itemName = entryBinding?.edtItemName?.text.toString()
         val categoryName = entryBinding?.txtSelected?.text.toString()
-        val offsetDateTime = OffsetDateTime.now(ZoneId.systemDefault())
-      //  val offsetDateTime = OffsetDateTime.of(2021, 2, 18, 0, 0, 0, 0, ZoneOffset.UTC)
+        val longTime = longDate
 
 
-        val entry = Entry(offsetDateTime, categoryName, itemName, itemPrice)
+        val entry = longTime?.let { Entry(it, categoryName, itemName, itemPrice) }
 
-        newEntryViewModel.insert(entry)
+        if (entry != null) {
+            newEntryViewModel.insert(entry)
+        }
 
         resetToDefault()
 
@@ -208,13 +219,6 @@ class NewEntryFragment : Fragment(), DatePickerDialog.OnDateSetListener {
                     putString(ARG_PARAM2, param2)
                 }
             }
-    }
-
-
-    @SuppressLint("SetTextI18n")
-    override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
-        val strMonth = Utils.getMonthName(month)
-        entryBinding?.txtFilterDate?.text = "$dayOfMonth $strMonth $year"
     }
 
 

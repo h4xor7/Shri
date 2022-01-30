@@ -1,21 +1,23 @@
 package com.pandey.shri.ui.main.view
 
 
+import android.opengl.Visibility
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Toast
+import androidx.core.util.Pair
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.google.android.material.chip.Chip
+import com.google.android.material.datepicker.MaterialDatePicker
+import com.pandey.shri.R
 import com.pandey.shri.databinding.FragmentDetailBinding
 import com.pandey.shri.ui.main.adapter.NewDetailAdapter
-import com.pandey.shri.ui.main.viewmodel.DetailDateViewModel
 import com.pandey.shri.ui.main.viewmodel.DetailViewModel
 import com.pandey.shri.ui.main.viewmodel.DetailViewModelFactory
+import com.pandey.shri.ui.main.viewmodel.NewEntryViewModel
 import com.pandey.shri.utils.Utils
 import java.util.*
 
@@ -38,7 +40,6 @@ class DetailFragment : Fragment() {
 
 
     private lateinit var detailViewModel: DetailViewModel
-    private lateinit var mdetailViewModel: DetailDateViewModel
 
 
     lateinit var newDetailAdapter: NewDetailAdapter
@@ -57,6 +58,7 @@ class DetailFragment : Fragment() {
     ): View? {
 
         detailBinding = FragmentDetailBinding.inflate(inflater, container, false)
+        setHasOptionsMenu(true)
         return binding.root
     }
 
@@ -67,16 +69,9 @@ class DetailFragment : Fragment() {
         layoutManager.orientation = LinearLayoutManager.VERTICAL
         detailBinding?.rvDetail?.layoutManager = layoutManager
         newDetailAdapter = NewDetailAdapter()
-        //  detailAdapter = DetailAdapter()
         detailBinding?.rvDetail?.adapter = newDetailAdapter
-        //  detailBinding?.rvDetail?.adapter = detailAdapter
 
-        /*
-        val mLayoutManager = LinearLayoutManager(view.context)
-        mLayoutManager.orientation = LinearLayoutManager.HORIZONTAL
-        detailBinding?.rvMonth?.layoutManager = mLayoutManager
-        detailBinding?.rvMonth?.adapter = monthAdapter*/
-        getMonthByCheckedPosition()
+
 
         observeViewModel()
 
@@ -85,99 +80,94 @@ class DetailFragment : Fragment() {
 
     private fun observeViewModel() {
 
-
-        /*   val factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-               override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                   return activity?.application?.let {
-                       DetailViewModel(
-
-                           it
-                       )
-                   } as T
-               }
-
-           }
-
-
-           detailViewModel = ViewModelProvider(this, factory).get(DetailViewModel::class.java)
-
-           detailViewModel.allExpense.observe(viewLifecycleOwner, { entry ->
-
-               newDetailAdapter.setExpense(entry)
-               Log.d(TAG, "observeViewModel: savedDate ${entry[0].date}")
-
-               Log.d(TAG, "observeViewModel: MyFirstDate ${Utils.getFirstOffSetDateOfMonth(3, 2021)}")
-
-               Log.d(
-                   TAG,
-                   "observeViewModel: MyLastDate ${Utils.getLastOffsetDateOfMonth(3, 2021, 30)}"
-               )
-
-
-           })
-   */
-
-        val detailViewModelFactory = DetailViewModelFactory(
-            requireActivity().application,
-            Utils.getFirstOffSetDateOfMonth(monthValue, yearValue),
-            Utils.getLastOffsetDateOfMonth(
-                monthValue, yearValue, Utils.getLastDateOFMonth(monthValue)
-            )
-        )
-
-        /*    val detailViewModelFactory = DetailViewModelFactory(
-                requireActivity().application,
-                Utils.getFirstOffSetDateOfMonth(2, 2021),
-                Utils.getLastOffsetDateOfMonth(
-                    2, yearValue, Utils.getLastDateOFMonth(2)
-                )
-            )*/
-
-        mdetailViewModel =
-            ViewModelProvider(this, detailViewModelFactory).get(DetailDateViewModel::class.java)
-/*        mdetailViewModel.dataByMonth.observe(viewLifecycleOwner, { entry ->
-
-            Log.d(
-                TAG,
-                "observeViewModel: query" + "SELECT * FROM entries WHERE date BETWEEN : ${
-                    Utils.getFirstOffSetDateOfMonth(
-                        monthValue,
-                        yearValue
+        val factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+                return activity?.application?.let {
+                    DetailViewModel(
+                        it
                     )
-                } AND : ${
-                    Utils.getLastOffsetDateOfMonth(
-                        monthValue,
-                        yearValue,
-                        Utils.getLastDateOFMonth(monthValue)
-                    )
-                } ORDER BY date ASC"
-            )
-            newDetailAdapter.setExpense(entry)
+                } as T
+            }
 
-            Log.d(TAG, "observeViewModel: $entry")
+        }
+
+        detailViewModel = ViewModelProvider(this,factory).get(DetailViewModel::class.java)
+
+        /*detailViewModel.getDataByDate(MaterialDatePicker.thisMonthInUtcMilliseconds(),
+            MaterialDatePicker.todayInUtcMilliseconds()).observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                entries -> newDetailAdapter.setExpense(entries)
+            Log.d(TAG, "observeViewModel:  entries $entries")
+
         })*/
 
-        observeFilterData()
+
+        detailViewModel.allExpense.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+                entries -> newDetailAdapter.setExpense(entries)
+
+        })
+
+
 
     }
 
-    private fun observeFilterData() {
-        mdetailViewModel.getFilterData(
-            Utils.getFirstOffSetDateOfMonth(monthValue, yearValue), Utils.getLastOffsetDateOfMonth(
-                monthValue, yearValue, Utils.getLastDateOFMonth(monthValue)
-            )
-        ).observe(viewLifecycleOwner, { entry ->
-            newDetailAdapter.setExpense(entry)
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        inflater.inflate(R.menu.top_menu,menu)
 
-            Log.d(TAG, "observeViewModel: $entry")
-        })
+    }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        return when(item.itemId){
+            R.id.menu_date_picker -> {
+                showDateRangePicker()
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         detailBinding = null
     }
+
+    private fun showDateRangePicker(){
+        val dateRangePicker =
+            MaterialDatePicker.Builder.dateRangePicker()
+                .setTitleText("Select dates")
+                .setTheme(R.style.ThemeOverlay_App_DatePicker)
+                .setSelection(
+                  Pair(   MaterialDatePicker.thisMonthInUtcMilliseconds(),
+                      MaterialDatePicker.todayInUtcMilliseconds())
+                )
+                .build()
+
+        dateRangePicker.show(activity?.supportFragmentManager!!,"Date Range Tag")
+
+        dateRangePicker.addOnPositiveButtonClickListener {
+
+            it.first?.let { it1 ->
+                it.second?.let { it2 ->
+                    detailViewModel.getDataByDate(
+                        it1,
+                        it2
+                    ).observe(viewLifecycleOwner, androidx.lifecycle.Observer { entries -> newDetailAdapter.setExpense(entries)
+                        Log.d(TAG, "observeViewModel:  entries $entries")
+
+                    })
+                }
+            }
+            detailBinding?.tvDateRange?.visibility  = View.VISIBLE
+            detailBinding?.tvDateRange?.text = dateRangePicker.headerText
+
+        }
+
+        dateRangePicker.addOnNegativeButtonClickListener { dateRangePicker.dismiss() }
+
+    }
+
 
     companion object {
         @JvmStatic
@@ -190,114 +180,5 @@ class DetailFragment : Fragment() {
             }
     }
 
-    private fun getMonthByCheckedPosition() {
-        when (Utils.getCurrentMonth()) {
-            1 -> {
-                detailBinding?.janChip?.isChecked = true
-            }
-            2 -> {
-                detailBinding?.febChip?.isChecked = true
-            }
-            3 -> {
-                detailBinding?.marChip?.isChecked = true
-            }
-            4 -> {
-                detailBinding?.aprChip?.isChecked = true
-            }
-            5 -> {
-                detailBinding?.mayChip?.isChecked = true
-            }
-            6 -> {
-                detailBinding?.junChip?.isChecked = true
-            }
-            7 -> {
-                detailBinding?.julChip?.isChecked = true
-            }
-            8 -> {
-                detailBinding?.augChip?.isChecked = true
-            }
-            9 -> {
-                detailBinding?.sepChip?.isChecked = true
-            }
-            10 -> {
-                detailBinding?.octChip?.isChecked = true
-            }
-            11 -> {
-                detailBinding?.novChip?.isChecked = true
-            }
-            else -> {
-                detailBinding?.decChip?.isChecked = true
-            }
-        }
-
-
-        detailBinding?.chipGroup?.setOnCheckedChangeListener { chipGroup, checkedId ->
-
-            when (chipGroup.findViewById<Chip>(checkedId)?.text) {
-                "JAN" -> {
-                    monthValue = 1
-                         observeFilterData()
-
-                }
-                "FEB" -> {
-                    monthValue = 2
-                      observeFilterData()
-                }
-                "MAR" -> {
-                    monthValue = 3
-                    observeFilterData()
-
-                }
-                "APR" -> {
-                    monthValue = 4
-                    observeFilterData()
-
-                }
-                "MAY" -> {
-                    monthValue = 5
-                    observeFilterData()
-
-                }
-                "JUN" -> {
-                    monthValue = 6
-                    observeFilterData()
-
-                }
-                "JUL" -> {
-                    monthValue = 7
-                    observeFilterData()
-
-                }
-                "AUG" -> {
-                    monthValue = 8
-
-                    observeFilterData()
-
-                }
-                "SEP" -> {
-                    monthValue = 9
-                    observeFilterData()
-
-                }
-                "OCT" -> {
-                    monthValue = 10
-                    observeFilterData()
-
-                }
-                "NOV" -> {
-                    monthValue = 11
-                    observeFilterData()
-
-                }
-                else -> {
-                    monthValue = 12
-                    observeFilterData()
-
-                }
-            }
-
-
-        }
-    }
 
 }

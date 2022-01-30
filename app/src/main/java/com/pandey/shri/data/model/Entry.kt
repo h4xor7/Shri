@@ -7,7 +7,7 @@ import java.time.OffsetDateTime
 
 @Entity(tableName = "entries")
 data class Entry(
-    @ColumnInfo(name = "date")  val date:OffsetDateTime,
+    @ColumnInfo(name = "date")  val date:Long,
     @ColumnInfo(name = "category") val  category: String,
     @ColumnInfo(name = "item_name") val itemName:String,
     @ColumnInfo(name = "item_price") val itemPrice:Int

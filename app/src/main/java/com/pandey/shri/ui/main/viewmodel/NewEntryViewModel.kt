@@ -13,13 +13,12 @@ import kotlinx.coroutines.withContext
 
 class NewEntryViewModel(application: Application) : AndroidViewModel(application) {
     private val repository: ExpenseRepository
-    val allExpense :LiveData<List<Entry>>
 
 
     init {
         val expenseDao = ExpenseRoomDatabase.getDatabase(application).expenseDao()
         repository = ExpenseRepository(expenseDao)
-        allExpense = repository.allExpense
+      //  allExpense = repository.allExpense
     }
 
 
@@ -27,6 +26,6 @@ class NewEntryViewModel(application: Application) : AndroidViewModel(application
      fun insert(entry: Entry) = viewModelScope.launch(Dispatchers.IO) {
         repository.insert(entry)
     }
-
-
 }
+
+

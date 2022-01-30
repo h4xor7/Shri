@@ -17,6 +17,7 @@ import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.utils.ColorTemplate
 import com.pandey.shri.R
+import com.pandey.shri.data.model.Entry
 import com.pandey.shri.databinding.FragmentHomeBinding
 import com.pandey.shri.ui.main.viewmodel.HomeViewModel
 import com.pandey.shri.utils.HomePrefrences
@@ -108,17 +109,20 @@ class HomeFragment : Fragment(), DatePickerDialog.OnDateSetListener {
         homeViewModel = ViewModelProvider(this, factory).get(HomeViewModel::class.java)
        // observeFilterData()
 
-        homeViewModel.allExpense.observe(this.viewLifecycleOwner, androidx.lifecycle.Observer {
-            expense->
+
+        homeViewModel.getDataByDate(1641945600000,1643673600000).observe(this.viewLifecycleOwner, androidx.lifecycle.Observer {
+                expense->
             Log.d(TAG, "observeViewModel: $expense")
 
+            evaluateData(expense)
 
         })
+
+
 
        // homeViewModel.getchartData()
 
 
-        setChartData()
 
 
     }
@@ -150,8 +154,44 @@ class HomeFragment : Fragment(), DatePickerDialog.OnDateSetListener {
     }
 
 
+    private  fun evaluateData(expenseList:List<Entry>){
+
+        Log.d(TAG, "evaluateData: $expenseList")
+        binding.txtTotalExpenseValue.text = Utils.grandTotal(expenseList).toString()
+
+        //yha loop chlega aur add hog
+
+        expenseList.forEach { expense ->
+
+            pieEntries?.add(PieEntry(2f,expense.category))
+
+        }
 
 
+
+
+        val dataSet = PieDataSet(pieEntries, "Percentage of Expense")
+
+        val data = PieData(dataSet)
+        dataSet.valueTextSize = 12f
+
+        //PieData(year, dataSet)
+        _binding?.pieChart?.data = data
+        _binding?.pieChart?.description?.isEnabled = false
+        //  _binding?.pieChart?.isDrawHoleEnabled = false
+        val chartColorList = mutableListOf<Int>()
+        chartColorList.add(ColorTemplate.rgb("#dc1b59"))
+        chartColorList.add(ColorTemplate.rgb("#81a3f0"))
+        chartColorList.add(ColorTemplate.rgb("#c28efa"))
+        chartColorList.add(ColorTemplate.rgb("#81d8f0"))
+        chartColorList.add(ColorTemplate.rgb("#8dba57"))
+        dataSet.setColors(chartColorList)
+
+        _binding?.pieChart?.animateXY(2000, 2000)
+
+
+
+    }
 
 
 
@@ -199,50 +239,6 @@ class HomeFragment : Fragment(), DatePickerDialog.OnDateSetListener {
         super.onDestroyView()
         _binding = null
     }
-
-    fun setChartData(){
-
-        lifecycleScope.launch(Dispatchers.IO){
-            for (category in Utils.getCategoryList()) {
-
-                val catData =    homeViewModel.getDataByCategory(
-                    Utils.getHomeOffSetDateOfMonth(dateValue, monthValue, yearValue),
-                    Utils.getLastOffsetDateOfMonth(
-                        monthValue, yearValue, Utils.getLastDateOFMonth(monthValue)
-                    ),
-                    category
-                )
-
-                // Log.d(TAG, "getchartData: $catData total = ${Utils.grandTotal(catData)}")
-                dummyHash.put(category,Utils.grandTotal(catData))
-
-
-                grandTotal += Utils.grandTotal(catData)
-
-                // pieEntries?.add(PieEntry())
-            }
-
-
-            for (category in Utils.getCategoryList()){
-                val catPer = calculatePercentage(grandTotal, dummyHash.get(category)!!)
-                //   Log.d(TAG, "getchartData: $category percentage $catPer")
-                if (catPer > 1){
-                    pieEntries?.add(PieEntry(catPer,category))
-                }
-
-
-            }
-
-            withContext(Dispatchers.Main){
-                _binding?.txtTotalExpenseValue?.text = grandTotal.toString()
-                showPieChart()
-            }
-
-        }
-
-
-    }
-
 
 
 

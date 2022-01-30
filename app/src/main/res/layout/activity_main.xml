@@ -13,17 +13,6 @@
         android:orientation="vertical">
 
 
-        <com.google.android.material.appbar.AppBarLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <androidx.appcompat.widget.Toolbar
-                android:id="@+id/main_tool_bar"
-                android:layout_width="match_parent"
-                app:title="@string/app_name"
-                android:layout_height="?actionBarSize"
-                app:titleTextColor="@color/white" />
-        </com.google.android.material.appbar.AppBarLayout>
 
         <fragment
             android:id="@+id/mainContainer"

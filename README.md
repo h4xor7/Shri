@@ -1,6 +1,6 @@
 # Shri
 
-Expense management application using Based on MVVM architecture using room
+Expense management application  Based on MVVM architecture using Room
 
 ## Application Install
 

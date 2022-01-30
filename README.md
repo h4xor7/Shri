@@ -4,7 +4,7 @@ Expense management application  Based on MVVM architecture using Room
 
 ## Application Install
 
-***You can Install and test latest MusicX app from below 👇***
+***You can Install and test latest Shri app from below 👇***
 
 ![Logo](https://img.shields.io/badge/Shri-Apk-green)
 

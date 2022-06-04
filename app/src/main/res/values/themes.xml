@@ -12,8 +12,12 @@
         <item name="android:colorBackground">@color/app_background</item>
         <item name="rippleColor">@color/secondary_light_blue</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
+        <item name="android:statusBarColor" >?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+
+        <item name="materialTimePickerTheme">@style/AppTheme.MaterialTimePickerTheme</item>
+
+
     </style>
 
     <style name="BottomNavigationView.Active" parent="@style/TextAppearance.AppCompat.Caption">
@@ -22,5 +26,25 @@
 
     <style name="BottomNavigationView" parent="@style/TextAppearance.AppCompat.Caption">
         <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="Widget.App.Chip" parent="Widget.MaterialComponents.TimePicker.Display">
+        <item name="android:textColor">@color/shri_diplay_text_color</item>
+    </style>
+
+    <style name="Widget.App.TimePicker.Clock" parent="Widget.MaterialComponents.TimePicker.Clock">
+        <item name="clockFaceBackgroundColor">@color/app_background</item>
+        <item name="clockHandColor">@color/secondary_blue</item>
+        <item name="clockNumberTextColor">@color/secondary_dark_blue</item>
+    </style>
+
+
+    <style name="AppTheme.MaterialTimePickerTheme" parent="ThemeOverlay.MaterialComponents.TimePicker">
+        <item name="android:colorAccent">@color/secondary_dark_blue</item>
+        <item name="android:colorPrimary">@color/primary_blue</item>
+        <item name="android:colorPrimaryDark">@color/primary_dark_blue</item>
+        <item name="colorOnSurface">@color/white</item>
+        <item name="colorSurface">@color/secondary_blue</item>
+
     </style>
 </resources>

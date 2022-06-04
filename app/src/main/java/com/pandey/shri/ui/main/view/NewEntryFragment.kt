@@ -3,16 +3,18 @@ package com.pandey.shri.ui.main.view
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.DatePicker
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.timepicker.MaterialTimePicker
+import com.google.android.material.timepicker.TimeFormat
 import com.pandey.shri.R
 import com.pandey.shri.data.model.CategoryModel
 import com.pandey.shri.data.model.Entry
@@ -30,6 +32,7 @@ import kotlin.collections.ArrayList
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
+private const val TAG = "NewEntryFragment"
 
 
 class NewEntryFragment : Fragment(), DatePickerDialog.OnDateSetListener {
@@ -39,6 +42,7 @@ class NewEntryFragment : Fragment(), DatePickerDialog.OnDateSetListener {
     private var entryBinding: FragmentNewEntryBinding? = null
     private val binding get() = entryBinding!!
     private val categoryAdapter = CategoryAdapter()
+    private var backOffsetDateTime:OffsetDateTime? =null
 
     private lateinit var newEntryViewModel: NewEntryViewModel
 
@@ -54,7 +58,7 @@ class NewEntryFragment : Fragment(), DatePickerDialog.OnDateSetListener {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         entryBinding = FragmentNewEntryBinding.inflate(inflater, container, false)
 
@@ -73,14 +77,17 @@ class NewEntryFragment : Fragment(), DatePickerDialog.OnDateSetListener {
         val day = c.get(Calendar.DAY_OF_MONTH)
 
         val defMonth = Utils.getMonthName(month)
+        backOffsetDateTime = OffsetDateTime.now(ZoneId.systemDefault())
+
+        val datePickerDialog =
+            activity?.let { it1 -> DatePickerDialog(it1, this, year, month, day) }
+
+        datePickerDialog?.datePicker?.maxDate = c.timeInMillis
+
 
         entryBinding?.txtFilterDate?.text = "$day $defMonth $year"
         entryBinding?.txtFilterDate?.setOnClickListener {
 
-            val datePickerDialog =
-                activity?.let { it1 -> DatePickerDialog(it1, this, year, month, day) }
-
-            datePickerDialog?.datePicker?.maxDate = c.timeInMillis
             datePickerDialog?.show()
         }
 
@@ -163,13 +170,14 @@ class NewEntryFragment : Fragment(), DatePickerDialog.OnDateSetListener {
         val itemPrice = Integer.parseInt(entryBinding?.edtItemPrice?.text.toString())
         val itemName = entryBinding?.edtItemName?.text.toString()
         val categoryName = entryBinding?.txtSelected?.text.toString()
-        val offsetDateTime = OffsetDateTime.now(ZoneId.systemDefault())
       //  val offsetDateTime = OffsetDateTime.of(2021, 2, 18, 0, 0, 0, 0, ZoneOffset.UTC)
 
 
-        val entry = Entry(offsetDateTime, categoryName, itemName, itemPrice)
+        Log.d(TAG, "saveData:$backOffsetDateTime ")
 
-        newEntryViewModel.insert(entry)
+        val entry = backOffsetDateTime?.let { Entry(it, categoryName, itemName, itemPrice) }
+
+        entry?.let { newEntryViewModel.insert(it) }
 
         resetToDefault()
 
@@ -179,7 +187,7 @@ class NewEntryFragment : Fragment(), DatePickerDialog.OnDateSetListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        entryBinding = null;
+        entryBinding = null
     }
 
     private fun resetToDefault() {
@@ -212,9 +220,52 @@ class NewEntryFragment : Fragment(), DatePickerDialog.OnDateSetListener {
 
     @SuppressLint("SetTextI18n")
     override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
+
+        Log.d(TAG, "onDateSet: $dayOfMonth $month $year")
+        val exactMonth =month+1
+        showTimePicker( year, exactMonth, dayOfMonth)
+
         val strMonth = Utils.getMonthName(month)
         entryBinding?.txtFilterDate?.text = "$dayOfMonth $strMonth $year"
     }
+
+
+    private fun showTimePicker(year: Int, month: Int, dayOfMonth: Int) {
+
+
+        val picker =
+            MaterialTimePicker.Builder()
+                .setTimeFormat(TimeFormat.CLOCK_12H)
+                .setHour(12)
+                .setMinute(10)
+                .setTitleText("Select Time")
+                .build()
+
+        picker.addOnPositiveButtonClickListener {
+            val hour = picker.hour
+            val minute = picker.minute
+            val time = "$hour:$minute"
+
+            Log.d(TAG, "showTimePicker: $time")
+             backOffsetDateTime = OffsetDateTime.of(year, month, dayOfMonth, 0, 0, 0, 0, ZoneOffset.UTC)
+        }
+
+        picker.addOnCancelListener {
+            picker.dismiss()
+        }
+
+        picker.addOnNegativeButtonClickListener {
+            picker.dismiss()
+        }
+        picker.addOnDismissListener {
+            picker.dismiss()
+        }
+
+
+        activity?.supportFragmentManager?.let { picker.show(it, picker.tag) }
+    }
+
+
 
 
 }

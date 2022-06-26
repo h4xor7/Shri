@@ -113,7 +113,7 @@ class NewEntryFragment : Fragment(), DatePickerDialog.OnDateSetListener {
         categoryList.add(CategoryModel("Electric", R.drawable.ic_electrical_appliances))
         categoryList.add(CategoryModel("Fare", R.drawable.ic_cab))
         categoryList.add(CategoryModel("Tuition Fee", R.drawable.ic_open_book))
-        categoryList.add(CategoryModel("Fast food", R.drawable.ic_fast_food))
+        categoryList.add(CategoryModel("Fast Food", R.drawable.ic_fast_food))
         categoryList.add(CategoryModel("Other", R.drawable.ic_rupee))
 
         categoryAdapter.addData(categoryList)

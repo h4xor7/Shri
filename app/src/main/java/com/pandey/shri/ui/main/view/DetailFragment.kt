@@ -9,12 +9,13 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.chip.Chip
 import com.pandey.shri.databinding.FragmentDetailBinding
 import com.pandey.shri.ui.main.adapter.NewDetailAdapter
 import com.pandey.shri.ui.main.viewmodel.DetailDateViewModel
-import com.pandey.shri.ui.main.viewmodel.DetailViewModel
 import com.pandey.shri.ui.main.viewmodel.DetailViewModelFactory
 import com.pandey.shri.utils.Utils
 import java.util.*
@@ -37,7 +38,6 @@ class DetailFragment : Fragment() {
     private var yearValue = Calendar.getInstance().get(Calendar.YEAR);
 
 
-    private lateinit var detailViewModel: DetailViewModel
     private lateinit var mdetailViewModel: DetailDateViewModel
 
 
@@ -67,95 +67,50 @@ class DetailFragment : Fragment() {
         layoutManager.orientation = LinearLayoutManager.VERTICAL
         detailBinding?.rvDetail?.layoutManager = layoutManager
         newDetailAdapter = NewDetailAdapter()
-        //  detailAdapter = DetailAdapter()
         detailBinding?.rvDetail?.adapter = newDetailAdapter
-        //  detailBinding?.rvDetail?.adapter = detailAdapter
+        detailBinding?.rvDetail?.setHasFixedSize(true)
+        onSwipeDeleteExpense()
 
-        /*
-        val mLayoutManager = LinearLayoutManager(view.context)
-        mLayoutManager.orientation = LinearLayoutManager.HORIZONTAL
-        detailBinding?.rvMonth?.layoutManager = mLayoutManager
-        detailBinding?.rvMonth?.adapter = monthAdapter*/
+
         getMonthByCheckedPosition()
 
         observeViewModel()
 
     }
 
+    private fun onSwipeDeleteExpense() {
+        val itemCallback = object :
+            ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT or ItemTouchHelper.RIGHT) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+                return false
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+
+                val position = viewHolder.adapterPosition
+                val expense = newDetailAdapter.getExpenseAtPosition(position)
+                mdetailViewModel.deleteExpense(expense)
+                newDetailAdapter.notifyItemChanged(position)
+                Toast.makeText(context, "${expense.itemName} Deleted", Toast.LENGTH_SHORT).show()
+
+            }
+        }
+
+        val itemTouchHelper = ItemTouchHelper(itemCallback)
+        itemTouchHelper.attachToRecyclerView(detailBinding?.rvDetail)
+
+    }
 
     private fun observeViewModel() {
 
-
-        /*   val factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-               override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-                   return activity?.application?.let {
-                       DetailViewModel(
-
-                           it
-                       )
-                   } as T
-               }
-
-           }
-
-
-           detailViewModel = ViewModelProvider(this, factory).get(DetailViewModel::class.java)
-
-           detailViewModel.allExpense.observe(viewLifecycleOwner, { entry ->
-
-               newDetailAdapter.setExpense(entry)
-               Log.d(TAG, "observeViewModel: savedDate ${entry[0].date}")
-
-               Log.d(TAG, "observeViewModel: MyFirstDate ${Utils.getFirstOffSetDateOfMonth(3, 2021)}")
-
-               Log.d(
-                   TAG,
-                   "observeViewModel: MyLastDate ${Utils.getLastOffsetDateOfMonth(3, 2021, 30)}"
-               )
-
-
-           })
-   */
-
         val detailViewModelFactory = DetailViewModelFactory(
-            requireActivity().application,
-            Utils.getFirstOffSetDateOfMonth(monthValue, yearValue),
-            Utils.getLastOffsetDateOfMonth(
-                monthValue, yearValue, Utils.getLastDateOFMonth(monthValue)
-            )
-        )
+            requireActivity().application)
 
-        /*    val detailViewModelFactory = DetailViewModelFactory(
-                requireActivity().application,
-                Utils.getFirstOffSetDateOfMonth(2, 2021),
-                Utils.getLastOffsetDateOfMonth(
-                    2, yearValue, Utils.getLastDateOFMonth(2)
-                )
-            )*/
-
-        mdetailViewModel =
-            ViewModelProvider(this, detailViewModelFactory).get(DetailDateViewModel::class.java)
-/*        mdetailViewModel.dataByMonth.observe(viewLifecycleOwner, { entry ->
-
-            Log.d(
-                TAG,
-                "observeViewModel: query" + "SELECT * FROM entries WHERE date BETWEEN : ${
-                    Utils.getFirstOffSetDateOfMonth(
-                        monthValue,
-                        yearValue
-                    )
-                } AND : ${
-                    Utils.getLastOffsetDateOfMonth(
-                        monthValue,
-                        yearValue,
-                        Utils.getLastDateOFMonth(monthValue)
-                    )
-                } ORDER BY date ASC"
-            )
-            newDetailAdapter.setExpense(entry)
-
-            Log.d(TAG, "observeViewModel: $entry")
-        })*/
+        mdetailViewModel = ViewModelProvider(this, detailViewModelFactory).get(DetailDateViewModel::class.java)
 
         observeFilterData()
 
@@ -166,11 +121,11 @@ class DetailFragment : Fragment() {
             Utils.getFirstOffSetDateOfMonth(monthValue, yearValue), Utils.getLastOffsetDateOfMonth(
                 monthValue, yearValue, Utils.getLastDateOFMonth(monthValue)
             )
-        ).observe(viewLifecycleOwner, { entry ->
+        ).observe(viewLifecycleOwner) { entry ->
             newDetailAdapter.setExpense(entry)
 
             Log.d(TAG, "observeViewModel: $entry")
-        })
+        }
 
     }
 
@@ -236,12 +191,12 @@ class DetailFragment : Fragment() {
             when (chipGroup.findViewById<Chip>(checkedId)?.text) {
                 "JAN" -> {
                     monthValue = 1
-                         observeFilterData()
+                    observeFilterData()
 
                 }
                 "FEB" -> {
                     monthValue = 2
-                      observeFilterData()
+                    observeFilterData()
                 }
                 "MAR" -> {
                     monthValue = 3

@@ -16,18 +16,21 @@ import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.utils.ColorTemplate
 import com.pandey.shri.R
+import com.pandey.shri.data.model.PieModel
 import com.pandey.shri.databinding.FragmentHomeBinding
 import com.pandey.shri.ui.main.viewmodel.HomeViewModel
 import com.pandey.shri.utils.HomePrefrences
 import com.pandey.shri.utils.Utils
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.math.log
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
-var pieEntries: ArrayList<PieEntry>? = null
 private const val TAG = "HomeFragment"
 
 
@@ -42,38 +45,13 @@ class HomeFragment : Fragment(), DatePickerDialog.OnDateSetListener {
     private var yearValue = Calendar.getInstance().get(Calendar.YEAR);
     private var dateValue = 1
     lateinit var homePerferences: HomePrefrences
+     var pieEntries: ArrayList<PieEntry>? = null
+    val catlist = listOf<String>("Recharge", "Vegetable", "Cloth","Electric","Fare","Tuition Fee","Fast Food","Other")
 
 
     private var grandTotalExpense: Int = 0
-    private var totalRechargeExpense: Int = 0
-    private var rechargeExpensePer: Float = 0F
-
-    private var totalClothExpense: Int = 0
-    private var clothExpensePer: Float = 0F
-    private var clothTest: Int = 0
 
 
-    private var totalFareExpense: Int = 0
-    private var fareExpensePer: Float = 0F
-
-    private var totalVegetablesExpense: Int = 0
-    private var vegetablesExpensePer: Float = 0F
-
-    private var totalElectricExpense: Int = 0
-    private var electricExpensePer: Float = 0F
-
-    private var totalTuitionExpense: Int = 0
-    private var tuitionExpensePer: Float = 0F
-
-    private var totalFastFoodExpense: Int = 0
-    private var fastFoodExpensePer: Float = 0F
-
-
-    private var totalOtherExpense: Int = 0
-    private var otherExpensePer: Float = 0F
-
-
-    val list = mutableListOf<Int>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -110,8 +88,9 @@ class HomeFragment : Fragment(), DatePickerDialog.OnDateSetListener {
 
         observeViewModel()
 
-        showPieChart()
         setDashboardDate()
+      //  showPieChart()
+
 
 
     }
@@ -121,7 +100,9 @@ class HomeFragment : Fragment(), DatePickerDialog.OnDateSetListener {
         val factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
             override fun <T : ViewModel?> create(modelClass: Class<T>): T {
                 return activity?.application?.let {
-                    HomeViewModel(it)
+                    HomeViewModel(
+                        it
+                    )
                 } as T
             }
         }
@@ -149,8 +130,6 @@ class HomeFragment : Fragment(), DatePickerDialog.OnDateSetListener {
                 activity?.let { it1 -> DatePickerDialog(it1, this, year, month, day) }
 
             //yha default data call hoga for current month
-
-
             datePickerDialog?.datePicker?.maxDate = c.timeInMillis
             datePickerDialog?.show()
 
@@ -161,198 +140,20 @@ class HomeFragment : Fragment(), DatePickerDialog.OnDateSetListener {
 
     private fun observeFilterData() {
 
-        homeViewModel.getHomeFilterData(
-            Utils.getHomeOffSetDateOfMonth(dateValue, monthValue, yearValue),
+        //to get all data of this month
+        homeViewModel.getFilterData(
+            Utils.getFirstOffSetDateOfMonth(monthValue, yearValue),
             Utils.getLastOffsetDateOfMonth(
-                monthValue, yearValue, Utils.getLastDateOFMonth(monthValue)
+                monthValue,
+                yearValue,
+                Utils.getLastDateOFMonth(monthValue)
             )
-        ).observe(viewLifecycleOwner, { allExpense ->
+        ).observe(viewLifecycleOwner) { entry ->
+           
+            Utils.grandTotal(entry)
+            getAllExpense(Utils.grandTotal(entry))
 
-            grandTotalExpense = Utils.grandTotal(allExpense)
-
-            getAllExpense(grandTotalExpense)
-
-          /*  GlobalScope.launch {
-                if (grandTotalExpense != null) {
-
-                    homePerferences.saveGrandTotal(grandTotalExpense)
-                }
-            }*/
-
-        })
-
-
-        //recharge total
-        homeViewModel.allRecharge(
-            Utils.getHomeOffSetDateOfMonth(dateValue, monthValue, yearValue),
-            Utils.getLastOffsetDateOfMonth(
-                monthValue, yearValue, Utils.getLastDateOFMonth(monthValue)
-            )
-        ).observe(viewLifecycleOwner, { allRecharge ->
-
-            totalRechargeExpense = Utils.grandTotal(allRecharge)
-
-         /*   GlobalScope.launch {
-
-                homePerferences.saveRechargeTotal(totalRechargeExpense)
-            }*/
-
-
-            //   rechargeExpensePer = calculatePercentage(grandTotalExpense, totalRechargeExpense)
-            //   pieEntries?.add(PieEntry(rechargeExpensePer, Constant.RECHARGE))
-
-
-        })
-
-        //vegetable total
-        homeViewModel.allVegetable(
-            Utils.getHomeOffSetDateOfMonth(dateValue, monthValue, yearValue),
-            Utils.getLastOffsetDateOfMonth(
-                monthValue, yearValue, Utils.getLastDateOFMonth(monthValue)
-            )
-        ).observe(viewLifecycleOwner, { allVegetable ->
-            totalVegetablesExpense = Utils.grandTotal(allVegetable)
-
-      /*      GlobalScope.launch {
-
-                homePerferences.saveVegetableTotal(totalVegetablesExpense)
-            }
-*/
-        })
-
-
-        //cloth total
-        homeViewModel.allCloth(
-            Utils.getHomeOffSetDateOfMonth(dateValue, monthValue, yearValue),
-            Utils.getLastOffsetDateOfMonth(
-                monthValue, yearValue, Utils.getLastDateOFMonth(monthValue)
-            )
-        ).observe(viewLifecycleOwner, { allCloth ->
-
-            totalClothExpense = Utils.grandTotal(allCloth)
-
-         /*   GlobalScope.launch {
-                homePerferences.saveClothTotal(totalClothExpense)
-
-                Log.d(TAG, "observeFilterData: cloth saved")
-            }
-*/
-        })
-
-        //fare total
-        homeViewModel.allFare(
-            Utils.getHomeOffSetDateOfMonth(dateValue, monthValue, yearValue),
-            Utils.getLastOffsetDateOfMonth(
-                monthValue, yearValue, Utils.getLastDateOFMonth(monthValue)
-            )
-        ).observe(viewLifecycleOwner, { allFare ->
-
-            totalFareExpense = Utils.grandTotal(allFare)
-
-         /*   GlobalScope.launch {
-
-                homePerferences.saveFareTotal(totalFareExpense)
-
-            }*/
-
-
-            // fareExpensePer = calculatePercentage(grandTotalExpense, totalFareExpense)
-            //pieEntries?.add(PieEntry(fareExpensePer, Constant.CLOTH))
-        })
-
-        //electric total
-        homeViewModel.allElectric(
-            Utils.getHomeOffSetDateOfMonth(dateValue, monthValue, yearValue),
-            Utils.getLastOffsetDateOfMonth(
-                monthValue, yearValue, Utils.getLastDateOFMonth(monthValue)
-            )
-        ).observe(viewLifecycleOwner, { allElectric ->
-
-            totalElectricExpense = Utils.grandTotal(allElectric)
-
-/*
-            GlobalScope.launch {
-
-                homePerferences.saveElectricTotal(totalElectricExpense)
-            }
-*/
-
-            //   electricExpensePer = calculatePercentage(grandTotalExpense, totalElectricExpense)
-            // pieEntries?.add(PieEntry(electricExpensePer, Constant.CLOTH))
-
-        })
-
-        //tuition total
-        homeViewModel.allTuition(
-            Utils.getHomeOffSetDateOfMonth(dateValue, monthValue, yearValue),
-            Utils.getLastOffsetDateOfMonth(
-                monthValue, yearValue, Utils.getLastDateOFMonth(monthValue)
-            )
-        ).observe(viewLifecycleOwner, { allTuition ->
-
-            totalTuitionExpense = Utils.grandTotal(allTuition)
-/*
-            GlobalScope.launch {
-
-
-                homePerferences.saveTuitionTotal(totalTuitionExpense)
-
-            }
-*/
-
-            //    tuitionExpensePer = calculatePercentage(grandTotalExpense, totalTuitionExpense)
-            //  pieEntries?.add(PieEntry(electricExpensePer, Constant.CLOTH))
-            Log.d(TAG, "observeViewModel HOME: $totalTuitionExpense")
-        })
-
-        //other total
-        homeViewModel.allOther(
-            Utils.getHomeOffSetDateOfMonth(dateValue, monthValue, yearValue),
-            Utils.getLastOffsetDateOfMonth(
-                monthValue, yearValue, Utils.getLastDateOFMonth(monthValue)
-            )
-        ).observe(viewLifecycleOwner, { allother ->
-
-            totalOtherExpense = Utils.grandTotal(allother)
-         /*   GlobalScope.launch {
-
-                homePerferences.saveOtherTotal(totalOtherExpense)
-
-            }*/
-
-
-        })
-
-        //fast food total
-        homeViewModel.allFastFood(
-            Utils.getHomeOffSetDateOfMonth(dateValue, monthValue, yearValue),
-            Utils.getLastOffsetDateOfMonth(
-                monthValue, yearValue, Utils.getLastDateOFMonth(monthValue)
-            )
-        ).observe(viewLifecycleOwner, { allfastFood ->
-
-            totalFastFoodExpense = Utils.grandTotal(allfastFood)
-/*
-            GlobalScope.launch {
-
-                homePerferences.saveFastFoodTotal(totalFastFoodExpense)
-
-            }
-*/
-
-
-        })
-
-/*
-        homePerferences.getClothTotal.asLiveData().observe(viewLifecycleOwner) {
-
-            if (it != null) {
-                clothTest = it
-
-            }
-        }*/
-
-
+        }
     }
 
 
@@ -361,23 +162,100 @@ class HomeFragment : Fragment(), DatePickerDialog.OnDateSetListener {
 
         grandTotalExpense = grandTotal
 
+        CoroutineScope(Dispatchers.Main).launch {
+            doPieChartOperations()
+
+        }
+
+
+
     }
 
 
-    private fun showPieChart() {
+
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+    }
+
+    companion object {
+
+        @JvmStatic
+        fun newInstance(param1: String, param2: String) =
+            HomeFragment().apply {
+                arguments = Bundle().apply {
+                    putString(ARG_PARAM1, param1)
+                    putString(ARG_PARAM2, param2)
+                }
+            }
+    }
+
+    override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
+        val strMonth = Utils.getMonthName(month)
+        _binding?.txtDate?.text = dayOfMonth.toString()
+        _binding?.txtmonth?.text = strMonth
+
+        //  yha filter wala data  call hoga
+        dateValue = dayOfMonth
+        yearValue = year
+        monthValue = month + 1
+
+        observeFilterData()
+
+
+    }
+
+    fun calculatePercentage(grandTotal: Int, categoryTotal: Int): Float {
+
+        val percentage = (categoryTotal / grandTotalExpense) * 100
+        return percentage.toFloat()
+
+    }
+
+    private suspend fun doPieChartOperations() {
+         val pieArr: MutableList<PieModel>  = mutableListOf()
+
+       val job = CoroutineScope(Dispatchers.IO).launch{
+
+           for (categoryName in catlist){
+            val listEntry =   homeViewModel.getDataByCategory(
+                   categoryName,
+                   Utils.getFirstOffSetDateOfMonth(monthValue, yearValue),
+                   Utils.getLastOffsetDateOfMonth(
+                       monthValue,
+                       yearValue,
+                       Utils.getLastDateOFMonth(monthValue)
+                   )
+               )
+
+               val catTotal = Utils.grandTotal(listEntry)
+               Log.d(TAG, "doPieChartOperations: ${catTotal} $categoryName")
+               if (catTotal!=0){
+                   pieArr.add(PieModel(categoryName,catTotal))
+               }
+
+
+           }
+       }
+
+        job.join()
+        Log.d(TAG, "doPieChartOperations: Pie Arr Size ${pieArr.size} ")
+        showPieChart(pieArr)
+
+    }
+
+
+
+
+    private fun showPieChart(pieArr:MutableList<PieModel>) {
+
 
         pieEntries = ArrayList()
 
-
-        pieEntries?.add(PieEntry(2f, "Fare"))
-        pieEntries?.add(PieEntry(4f, "Recharge"))
-        pieEntries?.add(PieEntry(2f, "Cloths"))
-        pieEntries?.add(PieEntry(2f, "Fast food"))
-        pieEntries?.add(PieEntry(2f, "Tuition Fee"))
-        pieEntries?.add(PieEntry(2f, "Vegetables"))
-        pieEntries?.add(PieEntry(2f, "Electric"))
-        pieEntries?.add(PieEntry(2f, "Others"))
-
+        for (category in pieArr){
+            pieEntries?.add(PieEntry(category.categoryTotal.toFloat(),category.categoryName))
+        }
 
         val dataSet = PieDataSet(pieEntries, "What ever you want")
 
@@ -402,48 +280,8 @@ class HomeFragment : Fragment(), DatePickerDialog.OnDateSetListener {
     }
 
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
-    companion object {
-
-        // TODO: Rename and change types and number of parameters
 
 
-        @JvmStatic
-        fun newInstance(param1: String, param2: String) =
-            HomeFragment().apply {
-                arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
-                }
-            }
-    }
-
-    override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
-        val strMonth = Utils.getMonthName(month)
-        _binding?.txtDate?.text = dayOfMonth.toString()
-        _binding?.txtmonth?.text = strMonth
-
-        //  yha filter wala data  call hoga
-
-        dateValue = dayOfMonth
-        yearValue = year
-        monthValue = month + 1
-
-        observeFilterData()
-
-
-    }
-
-    fun calculatePercentage(grandTotal: Int, categoryTotal: Int): Float {
-
-        val percentage = (categoryTotal / grandTotalExpense) * 100
-        return percentage.toFloat()
-
-    }
 
 
 }

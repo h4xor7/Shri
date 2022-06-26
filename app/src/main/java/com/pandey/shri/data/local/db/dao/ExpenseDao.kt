@@ -1,10 +1,7 @@
 package com.pandey.shri.data.local.db.dao
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.pandey.shri.data.model.Entry
 import java.time.OffsetDateTime
 import java.time.ZoneOffset
@@ -39,16 +36,16 @@ interface ExpenseDao {
     fun getDataByMonth(startDate:OffsetDateTime,endDate:OffsetDateTime): LiveData<List<Entry>>
 
 
-
-
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun  insertALL(entry: Entry)
+
+    @Delete
+    suspend fun  deleteExpense(entry: Entry)
 
 
 
     @Query("SELECT * FROM entries WHERE category = :categoryName AND date  BETWEEN :startDate AND :endDate ORDER BY date ASC")
-    fun getDataByCategory(categoryName:String,startDate:OffsetDateTime,endDate:OffsetDateTime): LiveData<List<Entry>>
+      fun getDataByCategory(categoryName:String,startDate:OffsetDateTime,endDate:OffsetDateTime): List<Entry>
 
 
 

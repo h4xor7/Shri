@@ -6,20 +6,18 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import com.pandey.shri.data.local.db.ExpenseRoomDatabase
 import com.pandey.shri.data.model.Entry
-import com.pandey.shri.data.repository.ExpenseRepository
+import com.pandey.shri.data.repository.ExpenseDetailRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class NewEntryViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository: ExpenseRepository
-    val allExpense :LiveData<List<Entry>>
+    private val repository: ExpenseDetailRepository
 
 
     init {
         val expenseDao = ExpenseRoomDatabase.getDatabase(application).expenseDao()
-        repository = ExpenseRepository(expenseDao)
-        allExpense = repository.allExpense
+        repository = ExpenseDetailRepository(expenseDao)
+
     }
 
 

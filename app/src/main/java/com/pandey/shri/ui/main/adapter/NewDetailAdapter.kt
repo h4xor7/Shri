@@ -51,6 +51,11 @@ class NewDetailAdapter : RecyclerView.Adapter<NewDetailAdapter.DetailViewHolder>
         return listData.size
     }
 
+    fun getExpenseAtPosition(position: Int): Entry {
+        return listData[position]
+    }
+
+
     internal fun setExpense(entry: List<Entry>) {
         this.listData = entry
         notifyDataSetChanged()

@@ -8,7 +8,7 @@ Expense management application  Based on MVVM architecture using Room
 
 ***You can Install and test latest Shri app from below 👇***
 
-[![Logo](https://img.shields.io/badge/Shri-Apk-green)](https://github.com/h4xor7/Shri/releases/download/v1.0.0-alpha/app-debug.apk)
+[![Logo](https://img.shields.io/badge/Shri-Apk-green)](https://github.com/h4xor7/Shri/releases/download/v1.0.0-beta/app-debug.apk)
 
 ### Features
 

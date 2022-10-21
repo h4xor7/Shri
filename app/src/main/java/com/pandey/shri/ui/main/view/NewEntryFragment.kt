@@ -42,7 +42,7 @@ class NewEntryFragment : Fragment(), DatePickerDialog.OnDateSetListener {
     private var entryBinding: FragmentNewEntryBinding? = null
     private val binding get() = entryBinding!!
     private val categoryAdapter = CategoryAdapter()
-    private var backOffsetDateTime:OffsetDateTime? =null
+    private var backOffsetDateTime: OffsetDateTime? = null
 
     private lateinit var newEntryViewModel: NewEntryViewModel
 
@@ -99,7 +99,14 @@ class NewEntryFragment : Fragment(), DatePickerDialog.OnDateSetListener {
         observeViewModel()
 
         entryBinding?.saveFab?.setOnClickListener {
-            saveData()
+            val isAllFieldsChecked = checkAllFields()
+
+            if (isAllFieldsChecked) {
+
+                saveData()
+            }
+
+
         }
     }
 
@@ -167,10 +174,12 @@ class NewEntryFragment : Fragment(), DatePickerDialog.OnDateSetListener {
 
 
     private fun saveData() {
+
+
         val itemPrice = Integer.parseInt(entryBinding?.edtItemPrice?.text.toString())
         val itemName = entryBinding?.edtItemName?.text.toString()
         val categoryName = entryBinding?.txtSelected?.text.toString()
-      //  val offsetDateTime = OffsetDateTime.of(2021, 2, 18, 0, 0, 0, 0, ZoneOffset.UTC)
+        //  val offsetDateTime = OffsetDateTime.of(2021, 2, 18, 0, 0, 0, 0, ZoneOffset.UTC)
 
 
         Log.d(TAG, "saveData:$backOffsetDateTime ")
@@ -198,10 +207,29 @@ class NewEntryFragment : Fragment(), DatePickerDialog.OnDateSetListener {
             entryBinding?.edtItemName?.setText("")
             entryBinding?.edtItemPrice?.setText("")
             entryBinding?.imgCategorySelected?.setImageResource(R.drawable.ic_rupee)
-            entryBinding?.txtSelected?.text ="Other"
+            entryBinding?.txtSelected?.text = "Other"
             entryBinding?.edtItemName?.requestFocus()
         }
 
+
+    }
+
+
+    private fun checkAllFields(): Boolean {
+
+        if (entryBinding?.edtItemPrice?.text?.length == 0) {
+
+            entryBinding?.edtItemPrice?.error = "This field is required"
+            return false
+        }
+
+        if (entryBinding?.edtItemName?.text?.length == 0) {
+
+            entryBinding?.edtItemName?.error = "This field is required"
+            return false
+        }
+
+        return true
 
     }
 
@@ -222,8 +250,8 @@ class NewEntryFragment : Fragment(), DatePickerDialog.OnDateSetListener {
     override fun onDateSet(view: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
 
         Log.d(TAG, "onDateSet: $dayOfMonth $month $year")
-        val exactMonth =month+1
-        showTimePicker( year, exactMonth, dayOfMonth)
+        val exactMonth = month + 1
+        showTimePicker(year, exactMonth, dayOfMonth)
 
         val strMonth = Utils.getMonthName(month)
         entryBinding?.txtFilterDate?.text = "$dayOfMonth $strMonth $year"
@@ -247,7 +275,8 @@ class NewEntryFragment : Fragment(), DatePickerDialog.OnDateSetListener {
             val time = "$hour:$minute"
 
             Log.d(TAG, "showTimePicker: $time")
-             backOffsetDateTime = OffsetDateTime.of(year, month, dayOfMonth, 0, 0, 0, 0, ZoneOffset.UTC)
+            backOffsetDateTime =
+                OffsetDateTime.of(year, month, dayOfMonth, 0, 0, 0, 0, ZoneOffset.UTC)
         }
 
         picker.addOnCancelListener {
@@ -264,8 +293,6 @@ class NewEntryFragment : Fragment(), DatePickerDialog.OnDateSetListener {
 
         activity?.supportFragmentManager?.let { picker.show(it, picker.tag) }
     }
-
-
 
 
 }

@@ -18,9 +18,9 @@ import com.google.android.material.timepicker.TimeFormat
 import com.pandey.shri.R
 import com.pandey.shri.data.model.CategoryModel
 import com.pandey.shri.data.model.Entry
-import com.pandey.shri.databinding.FragmentNewEntryBinding
 import com.pandey.shri.ui.main.adapter.CategoryAdapter
 import com.pandey.shri.ui.main.viewmodel.NewEntryViewModel
+import com.pandey.shri.databinding.FragmentNewEntryBinding
 import com.pandey.shri.utils.Utils
 import java.time.OffsetDateTime
 import java.time.ZoneId
@@ -28,7 +28,6 @@ import java.time.ZoneOffset
 import java.util.*
 import kotlin.collections.ArrayList
 
-// TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
@@ -36,7 +35,6 @@ private const val TAG = "NewEntryFragment"
 
 
 class NewEntryFragment : Fragment(), DatePickerDialog.OnDateSetListener {
-    // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
     private var entryBinding: FragmentNewEntryBinding? = null
@@ -122,7 +120,6 @@ class NewEntryFragment : Fragment(), DatePickerDialog.OnDateSetListener {
         categoryList.add(CategoryModel("Tuition Fee", R.drawable.ic_open_book))
         categoryList.add(CategoryModel("Fast Food", R.drawable.ic_fast_food))
         categoryList.add(CategoryModel("Other", R.drawable.ic_rupee))
-
         categoryAdapter.addData(categoryList)
         entryBinding?.rvCategory?.adapter = categoryAdapter
 
@@ -145,7 +142,7 @@ class NewEntryFragment : Fragment(), DatePickerDialog.OnDateSetListener {
     private fun observeViewModel() {
 
         val factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return activity?.application?.let {
                     NewEntryViewModel(
 
@@ -207,7 +204,7 @@ class NewEntryFragment : Fragment(), DatePickerDialog.OnDateSetListener {
             entryBinding?.edtItemName?.setText("")
             entryBinding?.edtItemPrice?.setText("")
             entryBinding?.imgCategorySelected?.setImageResource(R.drawable.ic_rupee)
-            entryBinding?.txtSelected?.text = "Other"
+            entryBinding?.txtSelected?.text = getString(R.string.txt_other)
             entryBinding?.edtItemName?.requestFocus()
         }
 

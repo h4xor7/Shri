@@ -29,7 +29,8 @@ Expense management application  Based on MVVM architecture using Room
   - [Navigation](https://developer.android.com/guide/navigation) - Android Jetpack's Navigation component helps you implement navigation
  
  ### MAD Scorecard
-![jetpack.png](https://github.com/h4xor7/Shri/blob/e714ba4fe2c2d4c62b1871fe305077e7ca5e7df8/media/jetpack.png)
+
+<img alt="jetpack.png" src="https://github.com/h4xor7/Shri/blob/e714ba4fe2c2d4c62b1871fe305077e7ca5e7df8/media/jetpack.png"/>
 
 ![kotlin.png](https://github.com/h4xor7/Shri/blob/e714ba4fe2c2d4c62b1871fe305077e7ca5e7df8/media/kotlin.png)
 

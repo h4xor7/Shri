@@ -1,6 +1,5 @@
-![screen_shot.png](snaps/shri.png)
+![screen_shot.png](snaps\shri.png)
 
-# Shri
 
 Expense management application Based on MVVM architecture using Room
 

@@ -1,4 +1,4 @@
-![screen_shot.png](snaps/shri.png)
+![screen_shot.png](snap/shri.png)
 
 
 Expense management application Based on MVVM architecture using Room

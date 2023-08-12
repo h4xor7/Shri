@@ -1,8 +1,6 @@
 ![screen_shot.png](snap/shri.png)
 
-
-Expense management application Based on MVVM architecture using Room
-
+Experience hassle-free expense management with Shri, a powerful Android app designed to help users effortlessly track and manage their expenses. Whether you're a freelancer, a student, or anyone seeking control over their finances, ExpenseTracker provides a user-friendly platform to keep your expenses in check
 ## Application Install
 
 ***You can Install and test latest Shri app from below 👇***

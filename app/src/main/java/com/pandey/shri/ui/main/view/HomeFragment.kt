@@ -19,15 +19,11 @@ import com.pandey.shri.R
 import com.pandey.shri.data.model.PieModel
 import com.pandey.shri.databinding.FragmentHomeBinding
 import com.pandey.shri.ui.main.viewmodel.HomeViewModel
-import com.pandey.shri.utils.HomePrefrences
 import com.pandey.shri.utils.Utils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.math.log
+import java.util.Calendar
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
@@ -35,17 +31,15 @@ private const val TAG = "HomeFragment"
 
 
 class HomeFragment : Fragment(), DatePickerDialog.OnDateSetListener {
-    // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
     private lateinit var homeViewModel: HomeViewModel
     private var monthValue = Utils.getCurrentMonth()
-    private var yearValue = Calendar.getInstance().get(Calendar.YEAR);
+    private var yearValue = Calendar.getInstance().get(Calendar.YEAR)
     private var dateValue = 1
-    lateinit var homePerferences: HomePrefrences
-     var pieEntries: ArrayList<PieEntry>? = null
+     private var pieEntries: ArrayList<PieEntry>? = null
     val catlist = listOf<String>("Recharge", "Vegetable", "Cloth","Electric","Fare","Tuition Fee","Fast Food","Other")
 
 
@@ -65,7 +59,7 @@ class HomeFragment : Fragment(), DatePickerDialog.OnDateSetListener {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
@@ -83,7 +77,6 @@ class HomeFragment : Fragment(), DatePickerDialog.OnDateSetListener {
 
         }
 
-        homePerferences = context?.let { HomePrefrences(it) }!!
 
 
         observeViewModel()
@@ -98,7 +91,7 @@ class HomeFragment : Fragment(), DatePickerDialog.OnDateSetListener {
     private fun observeViewModel() {
 
         val factory: ViewModelProvider.Factory = object : ViewModelProvider.Factory {
-            override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return activity?.application?.let {
                     HomeViewModel(
                         it
@@ -108,7 +101,7 @@ class HomeFragment : Fragment(), DatePickerDialog.OnDateSetListener {
         }
 
 
-        homeViewModel = ViewModelProvider(this, factory).get(HomeViewModel::class.java)
+        homeViewModel = ViewModelProvider(this, factory)[HomeViewModel::class.java]
         observeFilterData()
 
 
@@ -262,7 +255,6 @@ class HomeFragment : Fragment(), DatePickerDialog.OnDateSetListener {
         val data = PieData(dataSet)
         dataSet.valueTextSize = 12f
 
-        //PieData(year, dataSet)
         _binding?.pieChart?.data = data
         _binding?.pieChart?.description?.isEnabled = false
         //  _binding?.pieChart?.isDrawHoleEnabled = false
@@ -272,7 +264,7 @@ class HomeFragment : Fragment(), DatePickerDialog.OnDateSetListener {
         chartColorList.add(ColorTemplate.rgb("#c28efa"))
         chartColorList.add(ColorTemplate.rgb("#81d8f0"))
         chartColorList.add(ColorTemplate.rgb("#8dba57"))
-        dataSet.setColors(chartColorList)
+        dataSet.colors = chartColorList
 
         _binding?.pieChart?.animateXY(2000, 2000)
 

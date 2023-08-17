@@ -20,7 +20,7 @@ object Constant {
     const val FAST_FOOD_KEY = "fast_food_key"
     const val OTHER_KEY = "other_key"
 
-
+    const val REQUEST_CODE_UPDATE = 123
 
 
 

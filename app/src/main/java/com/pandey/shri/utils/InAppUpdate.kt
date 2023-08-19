@@ -2,10 +2,8 @@ package com.pandey.shri.utils
 
 import android.app.Activity
 import android.content.Intent
-import android.graphics.Color
 import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.appupdate.AppUpdateInfo
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
@@ -14,7 +12,6 @@ import com.google.android.play.core.install.InstallStateUpdatedListener
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
-import com.pandey.shri.R
 
 class InAppUpdate(activity: Activity) : InstallStateUpdatedListener {
 

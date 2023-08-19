@@ -8,12 +8,12 @@
     <fragment
         android:id="@+id/page_detail"
         android:name="com.pandey.shri.ui.main.view.DetailFragment"
-        android:label="fragment_detail"
+        android:label="Details"
         tools:layout="@layout/fragment_detail" />
     <fragment
         android:id="@+id/page_home"
         android:name="com.pandey.shri.ui.main.view.HomeFragment"
-        android:label="fragment_home"
+        android:label="Shri"
         tools:layout="@layout/fragment_home" >
         <action
             android:id="@+id/action_homeFragment_to_newEntryFragment"
@@ -22,7 +22,7 @@
     <fragment
         android:id="@+id/page_newEntry"
         android:name="com.pandey.shri.ui.main.view.NewEntryFragment"
-        android:label="fragment_new_entry"
+        android:label="Create"
         tools:layout="@layout/fragment_new_entry" >
         <action
             android:id="@+id/action_newEntryFragment_to_homeFragment"
